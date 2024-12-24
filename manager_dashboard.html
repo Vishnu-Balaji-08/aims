@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manager Dashboard - Approval Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .sidebar { transition: width 0.3s; }
+        .sidebar-collapsed { width: 64px; }
+        .sidebar-expanded { width: 250px; }
+        .sidebar-expanded .sidebar-item-text { display: inline; }
+        .sidebar-collapsed .sidebar-item-text { display: none; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar bg-blue-500 text-white sidebar-collapsed">
+        <div class="p-4">
+            <button onclick="toggleSidebar()" class="focus:outline-none">
+                <span id="menu-icon" class="text-2xl">&#9776;</span>
+            </button>
+        </div>
+        <nav class="mt-4">
+            <ul>
+                <li>
+                    <a href="{{ url_for('manager_dashboard') }}" class="block py-2 px-4 hover:bg-blue-600">
+                        <span class="sidebar-item-text">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('logout') }}" class="block py-2 px-4 hover:bg-red-600">
+                        <span class="sidebar-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-8">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-4xl font-bold">Manager Dashboard</h1>
+            </div>
+            
+            <div class="bg-white p-6 rounded shadow">
+                <h2 class="text-2xl font-bold mb-4">Pending Requests</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2">Title</th>
+                                <th class="px-4 py-2">Description</th>
+                                <th class="px-4 py-2">Status</th>
+                                <th class="px-4 py-2">Created At</th>
+                                <th class="px-4 py-2">File</th>
+                                <th class="px-4 py-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in requests %}
+                            <tr>
+                                <td class="border px-4 py-2">{{ request[2] }}</td>
+                                <td class="border px-4 py-2">{{ request[3] }}</td>
+                                <td class="border px-4 py-2">{{ request[4] }}</td>
+                                <td class="border px-4 py-2">{{ request[6] }}</td>
+                                <td class="border px-4 py-2">
+                                    {% if request[5] %}
+                                        <a href="{{ request[5] }}" class="text-blue-500 hover:text-blue-600">View File</a>
+                                    {% else %}
+                                        No file
+                                    {% endif %}
+                                </td>
+                                <td class="border px-4 py-2">
+                                    <form method="POST" action="{{ url_for('update_request') }}" class="flex space-x-2">
+                                        <input type="hidden" name="request_id" value="{{ request[0] }}">
+                                        <button type="submit" name="status" value="approved"
+                                                class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">
+                                            Approve
+                                        </button>
+                                        <button type="submit" name="status" value="rejected"
+                                                class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
+                                            Reject
+                                        </button>
+                                        <button type="submit" name="status" value="forwarded"
+                                                class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">
+                                            Forward to HR
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var icon = document.getElementById('menu-icon');
+            if (sidebar.classList.contains('sidebar-collapsed')) {
+                sidebar.classList.remove('sidebar-collapsed');
+                sidebar.classList.add('sidebar-expanded');
+                icon.innerHTML = '&times;';
+            } else {
+                sidebar.classList.remove('sidebar-expanded');
+                sidebar.classList.add('sidebar-collapsed');
+                icon.innerHTML = '&#9776;';
+            }
+        }
+    </script>
+</body>
+</html>
